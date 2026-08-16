@@ -1,4 +1,5 @@
 :root {
+  /* dark is the default theme — this is the site's real identity */
   --void: #131210;
   --panel: #1c1a17;
   --panel-2: #221f1b;
@@ -9,8 +10,31 @@
   --amber: #ffb33e;
   --magenta: #ff3e7f;
   --violet: #9b6bff;
+
+  /* theme-invariant: pill text stays dark regardless of mode,
+     since pill backgrounds are always a bright accent color */
+  --pill-ink: #131210;
+
   --sans: 'Space Grotesk', sans-serif;
   --mono: 'IBM Plex Mono', monospace;
+}
+
+/* light mode — only kicks in if the visitor's system is already
+   set to light. Same four hues, shifted darker so they still
+   read as text/borders against a pale background. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --void: #f7f4ee;
+    --panel: #ece7da;
+    --panel-2: #e2dccb;
+    --ink: #171310;
+    --ink-dim: #6d675b;
+    --line: #d9d2c1;
+    --cyan: #0e8f84;
+    --amber: #a86a08;
+    --magenta: #c21455;
+    --violet: #6839c9;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -109,15 +133,15 @@ nav a:hover, nav a:focus-visible { color: var(--cyan); }
 }
 
 .dotkey { width: 7px; height: 7px; border-radius: 1px; background: var(--ink-dim); flex: none; }
-.filters button[data-filter="practical-work"] .dotkey { background: var(--cyan); }
-.filters button[data-filter="writing"] .dotkey { background: var(--amber); }
+.filters button[data-filter="art"] .dotkey { background: var(--cyan); }
+.filters button[data-filter="research-writing"] .dotkey { background: var(--amber); }
 .filters button[data-filter="workshops"] .dotkey { background: var(--magenta); }
 .filters button[data-filter="collaborations"] .dotkey { background: var(--violet); }
 
 .filters button:hover { color: var(--ink); }
 .filters button.active { color: var(--ink); }
-.filters button[data-filter="practical-work"].active { color: var(--cyan); border-bottom-color: var(--cyan); }
-.filters button[data-filter="writing"].active { color: var(--amber); border-bottom-color: var(--amber); }
+.filters button[data-filter="art"].active { color: var(--cyan); border-bottom-color: var(--cyan); }
+.filters button[data-filter="research-writing"].active { color: var(--amber); border-bottom-color: var(--amber); }
 .filters button[data-filter="workshops"].active { color: var(--magenta); border-bottom-color: var(--magenta); }
 .filters button[data-filter="collaborations"].active { color: var(--violet); border-bottom-color: var(--violet); }
 .filters button[data-filter="all"].active { border-bottom-color: var(--ink); }
@@ -151,8 +175,8 @@ nav a:hover, nav a:focus-visible { color: var(--cyan); }
 /* primary category sets the one accent color used for crop-marks,
    title hover, and links. Tag pills below are independent and
    can show more than one category at once. */
-.entry[data-primary="practical-work"], .hero-frame[data-primary="practical-work"] { --c: var(--cyan); }
-.entry[data-primary="writing"], .hero-frame[data-primary="writing"] { --c: var(--amber); }
+.entry[data-primary="art"], .hero-frame[data-primary="art"] { --c: var(--cyan); }
+.entry[data-primary="research-writing"], .hero-frame[data-primary="research-writing"] { --c: var(--amber); }
 .entry[data-primary="workshops"], .hero-frame[data-primary="workshops"] { --c: var(--magenta); }
 .entry[data-primary="collaborations"], .hero-frame[data-primary="collaborations"] { --c: var(--violet); }
 
@@ -211,13 +235,22 @@ nav a:hover, nav a:focus-visible { color: var(--cyan); }
   letter-spacing: 0.04em;
   padding: 2px 7px;
   border-radius: 2px;
-  color: var(--void);
+  color: var(--pill-ink);
   font-weight: 500;
 }
-.entry-tag[data-cat="practical-work"] { background: var(--cyan); }
-.entry-tag[data-cat="writing"] { background: var(--amber); }
+.entry-tag[data-cat="art"] { background: var(--cyan); }
+.entry-tag[data-cat="research-writing"] { background: var(--amber); }
 .entry-tag[data-cat="workshops"] { background: var(--magenta); }
 .entry-tag[data-cat="collaborations"] { background: var(--violet); }
+
+/* status flag — separate from category pills on purpose:
+   outlined not filled, neutral not accent-colored, so it
+   never looks like a fifth type in the four-color system */
+.status-tag {
+  background: none;
+  border: 1px dashed var(--ink-dim);
+  color: var(--ink-dim);
+}
 
 .entry-head {
   display: flex;
@@ -278,6 +311,10 @@ nav a:hover, nav a:focus-visible { color: var(--cyan); }
   justify-content: space-between;
 }
 .status-bar .path span { color: var(--cyan); margin-left: 4px; }
+
+.status-links { display: flex; gap: 18px; }
+.status-links a { color: var(--ink-dim); }
+.status-links a:hover { color: var(--cyan); }
 
 /* ---------- project detail page ---------- */
 .back-link {
@@ -375,11 +412,92 @@ nav a:hover, nav a:focus-visible { color: var(--cyan); }
 }
 
 @media (max-width: 640px) {
-  header, .hero, .filters, .index-list, .detail, .hero-frame, .pager, .back-link { padding-left: 20px; padding-right: 20px; }
+  header, .hero, .filters, .index-list, .detail, .hero-frame, .pager, .back-link, .cv-wrap { padding-left: 20px; padding-right: 20px; }
   .entry { flex-direction: column; }
   .thumb { width: 100%; height: 170px; }
   .count { margin-left: 0; width: 100%; }
-  .status-bar { display: none; }
+  .status-bar { justify-content: center; padding: 10px 16px; }
+  .status-bar .path { display: none; }
+  .status-links { gap: 14px; font-size: 10.5px; }
   .pager { flex-direction: column; gap: 16px; }
   .pager a { max-width: 100%; }
+  .cv-row { flex-direction: column; gap: 4px; }
+  .cv-when { width: auto; }
+}
+
+/* ---------- CV page ---------- */
+.cv-wrap {
+  max-width: 760px;
+  margin: 56px auto 100px;
+  padding: 0 40px;
+}
+
+.cv-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 44px;
+}
+.cv-head h1 { font-size: 26px; font-weight: 700; margin: 0; }
+.cv-download {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-dim);
+  border-bottom: 1px solid currentColor;
+}
+.cv-download:hover { color: var(--cyan); }
+
+.cv-section { margin-bottom: 48px; }
+.cv-section h2 {
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-dim);
+  font-weight: 500;
+  margin: 0 0 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cv-row {
+  display: flex;
+  gap: 24px;
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.cv-row:last-child { border-bottom: none; }
+
+.cv-when {
+  flex: none;
+  width: 108px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-dim);
+  padding-top: 2px;
+}
+
+.cv-what { flex: 1; }
+.cv-title { font-size: 14.5px; font-weight: 700; margin-bottom: 3px; }
+.cv-org { font-family: var(--mono); font-size: 12px; color: var(--ink-dim); }
+.cv-view {
+  display: inline-block;
+  margin-left: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--cyan);
+  border-bottom: 1px solid currentColor;
+}
+
+.cv-skills { display: flex; flex-direction: column; gap: 14px; font-size: 13.5px; line-height: 1.6; padding-top: 8px; }
+.cv-skill-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 2px;
 }
