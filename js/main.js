@@ -10,21 +10,25 @@ if (filters.length && entries.length) {
     if (countLabel) countLabel.textContent = visible + ' / ' + total + ' filed';
   }
 
-  filters.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filters.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.dataset.filter;
-      let visible = 0;
-      entries.forEach(entry => {
-        const cats = entry.dataset.categories.split(' ');
-        const show = filter === 'all' || cats.includes(filter);
-        entry.classList.toggle('hidden', !show);
-        if (show) visible++;
-      });
-      updateCount(visible);
+  function applyFilter(btn) {
+    filters.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    let visible = 0;
+    entries.forEach(entry => {
+      const cats = entry.dataset.categories.split(/\s+/);
+      const show = filter === 'all' || cats.includes(filter);
+      entry.classList.toggle('hidden', !show);
+      if (show) visible++;
     });
-  });
+    updateCount(visible);
+  }
+
+  filters.forEach(btn => btn.addEventListener('click', () => applyFilter(btn)));
+
+  // Default filter on page load: whichever button has class="active" in the HTML (Art)
+  const defaultBtn = document.querySelector('.filters button.active') || filters[0];
+  applyFilter(defaultBtn);
 }
 
 // Index page: status bar slug preview on hover/focus
